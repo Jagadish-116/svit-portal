@@ -8,351 +8,27 @@ import {
   Key,
   Copy,
   Check,
-  BookOpen,
-  Shield,
   Zap,
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '@/contexts/AuthContext'
 import CleanAiMessage from '@/components/chat/CleanAiMessage'
 
 const DEFAULT_OPENROUTER_KEY =
+  import.meta.env.VITE_OPENROUTER_API_KEY ||
   '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'
 
-const BLU_SYSTEM_PROMPT = `You are Blu, the elite AI Academic Tutor designed for Swamy Vivekananda Institute of Technology (SVIT) specifically for the CSE – Cyber Security cohort (SR25 Regulation).
-
-Key Faculty & Curriculum Context:
-- Software Engineering (SE): Taught by Karuna Mam (Theory & UML Lab). Focus on clean requirements engineering (IEEE 830 SRS), Agile vs Waterfall, Design Patterns, and secure SDLC.
-- Cryptography & Network Security (CNS): Dr. K. Srinivas (AES, RSA, ECC, TLS, PKI, Network Defense).
-- Cyber Forensics & Incident Response (CFIR): Prof. R. Venkatesh (Digital Evidence, Autopsy, Volatility, Chain of Custody).
-- Database Management Systems (DBMS): Mrs. Anitha Reddy (SQL, ACID, Normalization, Query Optimization).
-- Computer Networks (CN): Mr. Suresh Babu (TCP/IP, OSI layers, routing, Wireshark packet analysis).
-
-Tone & Persona:
-1. Tone: Friendly, knowledgeable, sharp, cyber-focused, encouraging.
-2. Structure: Break down complex engineering concepts with real-world analogies (e.g. comparing network packets to physical mail sorting or encryption to secure vaults).
-3. Code Formatting: Provide well-commented code snippets in Python, C++, Java, or SQL.
-4. Clean Typography: Never output raw # or unnecessary asterisks (*). Use clean section titles and simple bullet points so the text is smooth and easy to read.
-
-STRICT CAPACITY & COMPLETION CONDITION:
-- You have a generous capacity limit of 4,000 output tokens.
-- MANDATORY CONDITION: You must strictly budget and complete your entire response within this limit so that NO explanation, sentence, list, or code block is left truncated or cut off.
-- NEVER produce half-responses.
-- Structure every response systematically into 4 complete phases:
-  1. Concept Overview (concise definition with a sharp real-world analogy)
-  2. In-Depth Technical Mechanics (core theory, architecture, step-by-step mechanism)
-  3. Practical Implementation / Code (syntactically complete, well-commented code)
-  4. SVIT Exam Tips & Final Takeaway (bullet points on how to score full marks in mid/final exams)
-- ALWAYS conclude with a complete final summary sentence.`
-
-// Comprehensive built-in Academic Tutor Engine for resilient, deep responses
-function generateSvitAcademicResponse(query, studentName) {
-  const q = query.toLowerCase()
-  const name = studentName || 'Student'
-
-  if (q.includes('agile') || q.includes('waterfall') || (q.includes('se') && q.includes('karuna'))) {
-    return `Hello ${name}! Let us break down Software Engineering (SE - Karuna Mam's syllabus) with a full comparative analysis.
-
-Concept Overview & Analogy:
-Think of Waterfall like building a bridge: once concrete is poured, you cannot easily change the blueprints. Agile is like navigating with live GPS: you iteratively adjust route based on real-time traffic conditions.
-
-In-Depth Technical Comparison:
-
-1. Waterfall Model (Sequential & Rigid):
-• Phases: Requirements Engineering (SRS) -> System Design -> Implementation -> Verification -> Maintenance.
-• Key Characteristic: Each phase must be 100% frozen and signed off before the next begins.
-• Best For: High-assurance defense systems, aerospace, or banking mainframes with unchangeable specifications.
-• Limitation: High risk; software is only tested near the end of the project lifecycle.
-
-2. Agile Methodology (Iterative & Dynamic):
-• Key Frameworks: Scrum (2-4 week Sprints), Kanban, Extreme Programming (XP).
-• Core Values: Working software over comprehensive documentation; customer collaboration over contract negotiation; responding to change over following a plan.
-• Best For: Modern web, mobile applications, and rapid cybersecurity patch deployments.
-
-Practical Software Engineering Example:
-\`\`\`python
-# Agile Sprint User Story Implementation (IEEE Compliant)
-class UserStory:
-    def __init__(self, role, capability, business_value):
-        self.role = role
-        self.capability = capability
-        self.business_value = business_value
-        self.acceptance_criteria = []
-        self.is_verified = False
-
-    def add_criteria(self, rule):
-        self.acceptance_criteria.append(rule)
-
-    def test_sprint_acceptance(self):
-        print(f"[Sprint Review] Validating: As a {self.role}, I want to {self.capability}...")
-        self.is_verified = len(self.acceptance_criteria) > 0
-        return self.is_verified
-
-story = UserStory("CyberSec Student", "view aggregate attendance", "prevent detention")
-story.add_criteria("Attendance gauge updates in real-time >= 75%")
-story.test_sprint_acceptance()
-\`\`\`
-
-SVIT Exam Tips & Takeaways (Karuna Mam SE Theory):
-• For 10-mark questions: Draw the 5-phase Waterfall waterfall cascade diagram and the Agile iterative cycle side-by-side.
-• Highlight IEEE 830 standard requirements documentation in your SRS answers.
-• Always mention the Spiral Model as a risk-driven alternative between Waterfall and Agile.
-
-Summary & Takeaway:
-Waterfall guarantees strict predictability for fixed-scope contracts, while Agile maximizes flexibility and early defect discovery in modern iterative engineering.`
-  }
-
-  if (q.includes('rsa') || q.includes('diffie') || q.includes('crypto') || q.includes('cipher')) {
-    return `Hello ${name}! Let us dissect Cryptography & Network Security (Dr. K. Srinivas's CNS syllabus).
-
-Concept Overview & Vault Analogy:
-Symmetric cryptography (AES) is like a shared padlock with one key. Asymmetric cryptography (RSA / Diffie-Hellman) gives everyone an open padlock (Public Key), but only the recipient holds the secret key (Private Key) to unlock it.
-
-Technical Breakdown of RSA Algorithm:
-
-1. Key Generation Mechanics:
-• Step 1: Select two distinct large prime numbers, p and q.
-• Step 2: Compute modulus n = p * q.
-• Step 3: Compute Euler's Totient function: phi(n) = (p - 1) * (q - 1).
-• Step 4: Choose public exponent e such that 1 < e < phi(n) and gcd(e, phi(n)) == 1.
-• Step 5: Compute private exponent d such that (d * e) mod phi(n) == 1.
-• Public Key: (e, n) | Private Key: (d, n)
-
-2. Mathematical Encryption & Decryption:
-• Ciphertext: C = (M^e) mod n
-• Plaintext: M = (C^d) mod n
-
-Practical Python Implementation:
-\`\`\`python
-# Simple Educational RSA Implementation
-import math
-
-def generate_rsa_keys(p, q):
-    n = p * q
-    phi = (p - 1) * (q - 1)
-    
-    # Choose e
-    e = 3
-    while math.gcd(e, phi) != 1:
-        e += 2
-        
-    # Extended Euclidean Algorithm to find d
-    d = pow(e, -1, phi)
-    return ((e, n), (d, n))
-
-def encrypt(message_val, pub_key):
-    e, n = pub_key
-    return pow(message_val, e, n)
-
-def decrypt(cipher_val, priv_key):
-    d, n = priv_key
-    return pow(cipher_val, d, n)
-
-# Example with small primes (17, 19)
-pub, priv = generate_rsa_keys(17, 19)
-secret = 42
-cipher = encrypt(secret, pub)
-recovered = decrypt(cipher, priv)
-print(f"Original: {secret} -> Ciphertext: {cipher} -> Decrypted: {recovered}")
-\`\`\`
-
-SVIT CNS Exam Pointers:
-• For Mid-1 CNS questions: Always show the step-by-step modular exponentiation math and write out the gcd verification.
-• Key length recommendation for modern secure production: Minimum 2048-bit (or 3072-bit) RSA to withstand factoring attacks.
-• Differentiate confidentiality (encrypt with receiver's public key) vs authentication (sign with sender's private key).
-
-Summary & Takeaway:
-RSA security is mathematically underpinned by the integer factorization problem of multiplying two large primes, making it the bedrock of digital signatures and secure web handshakes.`
-  }
-
-  if (q.includes('sql') || q.includes('injection') || q.includes('xss') || q.includes('buffer')) {
-    return `Hello ${name}! Let us investigate Web Security & Vulnerability Analysis for SVIT Cyber Security.
-
-Concept Overview & The Guard Analogy:
-SQL Injection is like slipping a forged court order into a clerk's mail tray: if the clerk reads raw text without checking authorization stamps, malicious commands execute with full database privileges.
-
-Detailed Technical Breakdown:
-
-1. SQL Injection (SQLi) Mechanics:
-• Cause: Concatenating untrusted user input directly into SQL strings without parameterization.
-• Tautology Attack: Inputting \`' OR '1'='1\` causes the WHERE clause to evaluate to true for every single row.
-• UNION Attacks: Extracting password hashes or internal schemas across multiple tables.
-
-2. Defense in Depth:
-• Primary Defense: Parameterized Queries (Prepared Statements). The query structure is pre-compiled by the SQL engine before user values are bound.
-• Secondary Defense: Least Privilege IAM (grant read-only permissions to application DB users) and WAF filtering.
-
-Vulnerable vs Secure Code Implementation:
-\`\`\`python
-import sqlite3
-
-# VULNERABLE CODE (Never write this in your projects!)
-def unsafe_login(db, username, password):
-    query = f"SELECT * FROM users WHERE user = '{username}' AND pass = '{password}'"
-    return db.execute(query).fetchall()
-
-# SECURE CODE (Defense-in-Depth with Prepared Statements)
-def safe_login(db, username, password):
-    # The SQL compiler treats ? strictly as literal data, never as executable code
-    query = "SELECT id, full_name, role FROM users WHERE user = ? AND pass = ?"
-    cursor = db.cursor()
-    cursor.execute(query, (username, password))
-    return cursor.fetchone()
-\`\`\`
-
-SVIT Exam & Lab Viva Tips:
-• Clearly explain Prepared Statements vs Input Sanitization in your theory answer.
-• Mention Second-Order SQLi (stored payloads executed during later administrative processing).
-• Refer to OWASP Top 10 Category A03:2021 (Injection).
-
-Summary & Takeaway:
-Never concatenate dynamic strings into queries. Prepared statements guarantee that the database engine treats all input strictly as literal values rather than executable syntax.`
-  }
-
-  if (q.includes('tcp') || q.includes('osi') || q.includes('network') || q.includes('wireshark')) {
-    return `Hello ${name}! Let us dive into Computer Networks (Mr. Suresh Babu's CN syllabus).
-
-Concept Overview & Post Office Analogy:
-The OSI model is like postal delivery: Application layer writes the letter, Presentation translates the language, Session establishes the mailbox, Transport ensures registered tracking (TCP), Network handles routing addresses (IP), Data Link packs it into physical vans (Ethernet), and Physical transmits electrical signals over wires.
-
-Detailed Technical Architecture:
-
-1. TCP 3-Way Handshake (Connection Establishment):
-• Step 1 (SYN): Client sends SYN packet with an Initial Sequence Number (ISN_c). State: SYN_SENT.
-• Step 2 (SYN-ACK): Server responds with SYN bit set and acknowledges client with ACK = ISN_c + 1. State: SYN_RCVD.
-• Step 3 (ACK): Client acknowledges server's sequence number with ACK = ISN_s + 1. State: ESTABLISHED.
-
-2. OSI 7 Layers vs TCP/IP 4 Layers:
-• Application, Presentation, Session -> Consolidated into TCP/IP Application Layer.
-• Transport Layer -> TCP (Reliable, byte-stream, sliding window) / UDP (Fast, connectionless datagrams).
-• Network Layer -> IP (IPv4 / IPv6, ICMP, ARP).
-• Data Link & Physical -> Network Access / Link Layer.
-
-Python Network Socket Verification:
-\`\`\`python
-import socket
-
-def test_tcp_handshake(host, port):
-    print(f"Initiating 3-Way Handshake with {host}:{port}...")
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.settimeout(3.0)
-    try:
-        s.connect((host, port))
-        print("-> [SYN] sent")
-        print("<- [SYN-ACK] received")
-        print("-> [ACK] confirmed: Connection ESTABLISHED successfully!")
-        s.close()
-    except Exception as e:
-        print(f"Handshake failed: {e}")
-
-test_tcp_handshake("svit.ac.in", 80)
-\`\`\`
-
-SVIT CN Exam Pointers:
-• For 10-mark questions: Draw the 3-Way Handshake timing ladder diagram with Sequence and Acknowledgment numbers clearly marked.
-• Contrast TCP flow control (Sliding Window Protocol) with congestion control (Slow Start, Congestion Avoidance, Fast Retransmit).
-• In Wireshark practicals, filter for \`tcp.flags.syn == 1\` to analyze connection attempts.
-
-Summary & Takeaway:
-The 3-way handshake guarantees synchronized sequence numbers and buffer allocations on both endpoints before any payload data is exchanged.`
-  }
-
-  if (q.includes('dbms') || q.includes('normaliz') || q.includes('acid')) {
-    return `Hello ${name}! Here is the complete breakdown of Database Management Systems (Mrs. Anitha Reddy's DBMS syllabus).
-
-Concept Overview & Organizing Analogy:
-Normalization is like organizing your wardrobe: instead of dumping clothes, shoes, and books into one messy closet, you categorize them into dedicated drawers to avoid duplication and clutter.
-
-Detailed Technical Mechanics:
-
-1. ACID Properties of Transactions:
-• Atomicity: All or nothing execution (enforced via Write-Ahead Logging / Undo Logs).
-• Consistency: Database transitions from one valid state to another, preserving all integrity constraints.
-• Isolation: Concurrent transactions execute without cross-contamination (Serializable, Repeatable Read, Read Committed).
-• Durability: Once committed, updates survive power failures or system crashes (Redo Logs).
-
-2. Normal Forms Hierarchy:
-• 1NF: Atomic values only; no multi-valued attributes or repeating groups.
-• 2NF: In 1NF and no Partial Functional Dependency (non-prime attributes must depend on the whole primary key).
-• 3NF: In 2NF and no Transitive Dependency (non-prime attributes cannot depend on other non-prime attributes).
-• BCNF (Boyce-Codd): For every functional dependency X -> Y, X must be a Super Key.
-
-SQL Schema Normalization Example:
-\`\`\`sql
--- 3NF Normalized Schema for SVIT Portal
-CREATE TABLE students (
-    hall_ticket VARCHAR(10) PRIMARY KEY,
-    full_name VARCHAR(100) NOT NULL,
-    branch_code VARCHAR(10) NOT NULL
-);
-
-CREATE TABLE courses (
-    course_id VARCHAR(10) PRIMARY KEY,
-    course_name VARCHAR(100) NOT NULL,
-    faculty_name VARCHAR(100) NOT NULL
-);
-
--- Junction table resolving M:N relationship with Foreign Keys
-CREATE TABLE enrollments (
-    enrollment_id SERIAL PRIMARY KEY,
-    hall_ticket VARCHAR(10) REFERENCES students(hall_ticket),
-    course_id VARCHAR(10) REFERENCES courses(course_id),
-    attendance_pct DECIMAL(5,2) DEFAULT 100.0,
-    CONSTRAINT unique_student_course UNIQUE(hall_ticket, course_id)
-);
-\`\`\`
-
-SVIT DBMS Exam Pointers:
-• For 10-mark questions: Take an unnormalized student record table and show the decomposition step-by-step into 1NF, 2NF, and 3NF.
-• Clearly define Armstrong's Axioms (Reflexivity, Augmentation, Transitivity).
-• Discuss Two-Phase Locking (2PL) protocol for guaranteeing serializability.
-
-Summary & Takeaway:
-Normalization eliminates data anomalies (Insert, Update, Delete) while ACID guarantees transactional integrity in distributed and high-load databases.`
-  }
-
-  // Generic comprehensive response
-  return `Hello ${name}! Let us explore **${query}** in the context of SVIT CSE Cyber Security (SR25 Regulation).
-
-Concept Overview:
-Understanding "${query}" requires establishing the foundational principle: in modern computer engineering and cyber defense, every abstraction layer must provide verifiable integrity, deterministic performance, and strict boundary controls.
-
-Technical Deep-Dive:
-1. Core Architectural Pillars:
-• Mathematical / Structural Baseline: Defining the inputs, states, transformations, and outputs.
-• Security & Boundary Verification: How the protocol or algorithm prevents unauthorized state alteration.
-• Efficiency & Complexity: Scalability under load, time complexity O(n), and space overhead.
-
-2. Practical Engineering Implementation:
-\`\`\`python
-# SVIT Academic Verification Snippet for ${query}
-def analyze_academic_concept(concept_name):
-    print(f"[SVIT CSE Tutor] Analyzing: {concept_name}")
-    metrics = {
-        "domain": "CSE - Cyber Security",
-        "regulation": "SR25",
-        "reliability": "Guaranteed Complete Response",
-        "status": "Verified & Detailed"
-    }
-    for k, v in metrics.items():
-        print(f" • {k.capitalize()}: {v}")
-    return True
-
-analyze_academic_concept("${query}")
-\`\`\`
-
-SVIT Academic Exam Pointers:
-• Always state the formal definition and standard terminology (IEEE, NIST, or RFC) first.
-• Include a clear schematic or block diagram in your answer sheet.
-• Highlight relevant industry use cases and cyber security implications.
-
-Summary & Takeaway:
-Mastering ${query} provides the core conceptual clarity required for both high academic performance in mid/final exams and real-world cybersecurity engineering.`
-}
+const BLU_SYSTEM_PROMPT = `You are Blu, a helpful, intelligent, and highly capable AI academic tutor and assistant.
+Answer questions directly, accurately, thoroughly, and comprehensively regardless of the subject, field, or topic.
+
+Guidelines:
+1. Answer the user's specific question directly, concisely, and completely. Never inject unrelated templates or unwanted boilerplate.
+2. If the user asks for code, provide clean, syntactically correct, and well-commented code.
+3. Structure your response clearly with helpful bullet points and clean titles when appropriate.
+4. Clean Typography: Never output raw markdown headers (#, ##, ###) or excessive asterisks (*). Present clean, easy-to-read text.
+5. Completeness: Always finish your explanation and conclusion completely without cutting off midway.`
 
 export default function BluChat() {
   const navigate = useNavigate()
-  const { profile } = useAuth()
   const [input, setInput] = useState('')
   const [isStreaming, setIsStreaming] = useState(false)
   const [copiedId, setCopiedId] = useState(null)
@@ -363,7 +39,6 @@ export default function BluChat() {
   const [apiKey, setApiKey] = useState(() => {
     return (
       localStorage.getItem('svit_openrouter_api_key') ||
-      import.meta.env.VITE_OPENROUTER_API_KEY ||
       DEFAULT_OPENROUTER_KEY
     )
   })
@@ -407,33 +82,32 @@ export default function BluChat() {
   }
 
   const suggestedPrompts = [
-    'Explain Software Engineering Agile vs Waterfall (Karuna Mam SE syllabus)',
-    'Explain the TCP/IP 3-way handshake with real-world analogies',
-    'What is SQL injection and how do I prevent it using Prepared Statements?',
-    'Explain RSA Public Key Cryptography algorithm step-by-step',
+    'Explain the difference between TCP and UDP with examples',
+    'How does binary search work and what is its time complexity?',
+    'Explain the concept of public-key cryptography with an example',
+    'How do I optimize SQL queries for large datasets?',
   ]
 
-  // Stream local academic generator chunk-by-chunk for an engaging UI experience
-  const streamLocalTutorResponse = (queryText, botMessageId) => {
-    const fullText = generateSvitAcademicResponse(queryText, profile?.full_name)
-    const chunks = fullText.split(' ')
+  // Smoothly stream full text to the chat UI word-by-word
+  const streamTextToMessage = (fullText, botMessageId) => {
+    const words = fullText.split(' ')
     let currentIdx = 0
-    let currentText = ''
+    let accumulated = ''
 
     const interval = setInterval(() => {
-      if (currentIdx < chunks.length) {
-        currentText += (currentIdx === 0 ? '' : ' ') + chunks[currentIdx]
+      if (currentIdx < words.length) {
+        accumulated += (currentIdx === 0 ? '' : ' ') + words[currentIdx]
         currentIdx++
         setMessages((prev) =>
           prev.map((msg) =>
-            msg.id === botMessageId ? { ...msg, content: currentText } : msg
+            msg.id === botMessageId ? { ...msg, content: accumulated } : msg
           )
         )
       } else {
         clearInterval(interval)
         setIsStreaming(false)
       }
-    }, 28)
+    }, 20)
   }
 
   const handleSend = async (textToSend) => {
@@ -462,6 +136,16 @@ export default function BluChat() {
 
     setMessages([...newMessages, initialBotMessage])
 
+    const chatPayloadMessages = [
+      { role: 'system', content: BLU_SYSTEM_PROMPT },
+      ...newMessages.slice(-8).map((m) => ({
+        role: m.role,
+        content: m.content,
+      })),
+    ]
+
+    // 1. First Attempt: OpenRouter with streaming
+    let openRouterSuccess = false
     try {
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
@@ -469,7 +153,7 @@ export default function BluChat() {
           Authorization: `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
           'HTTP-Referer': window.location.origin,
-          'X-Title': 'SVIT Portal - Blu Academic Tutor',
+          'X-Title': 'SVIT Portal - Blu AI Tutor',
         },
         body: JSON.stringify({
           model: 'openrouter/free',
@@ -477,25 +161,16 @@ export default function BluChat() {
             'openrouter/free',
             'meta-llama/llama-3.3-70b-instruct:free',
             'google/gemma-4-31b-it:free',
-            'google/gemma-4-26b-a4b-it:free',
-            'qwen/qwen-2.5-coder-32b-instruct:free',
           ],
-          // Generous capacity limit with explicit completion conditions
           max_tokens: 4000,
-          temperature: 0.65,
+          temperature: 0.7,
           stream: true,
-          messages: [
-            { role: 'system', content: BLU_SYSTEM_PROMPT },
-            ...newMessages.slice(-8).map((m) => ({
-              role: m.role,
-              content: m.content,
-            })),
-          ],
+          messages: chatPayloadMessages,
         }),
       })
 
       if (!response.ok) {
-        throw new Error(`OpenRouter status: ${response.status}`)
+        throw new Error(`OpenRouter HTTP ${response.status}`)
       }
 
       const reader = response.body.getReader()
@@ -534,7 +209,6 @@ export default function BluChat() {
         }
       }
 
-      // Flush any trailing buffer data
       buffer += decoder.decode()
       if (buffer.trim()) {
         const remainingLines = buffer.split('\n')
@@ -559,15 +233,55 @@ export default function BluChat() {
         }
       }
 
-      if (!accumulated.trim()) {
-        throw new Error('Empty response from stream')
+      if (accumulated.trim()) {
+        openRouterSuccess = true
+        setIsStreaming(false)
+        return
       }
+    } catch (openRouterErr) {
+      console.warn('OpenRouter connection attempt failed, switching to live universal AI:', openRouterErr)
+    }
 
-      setIsStreaming(false)
-    } catch (err) {
-      console.warn('API stream failed or unavailable, activating full Academic Tutor Engine:', err)
-      // Smoothly stream the complete, un-truncated SVIT academic curriculum response
-      streamLocalTutorResponse(queryText, botMessageId)
+    // 2. Second Attempt: Live AI provider without key dependency
+    if (!openRouterSuccess) {
+      try {
+        const liveResponse = await fetch('https://text.pollinations.ai/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            messages: chatPayloadMessages,
+            model: 'openai',
+            seed: Math.floor(Math.random() * 1000000),
+          }),
+        })
+
+        if (!liveResponse.ok) {
+          throw new Error(`Live AI status: ${liveResponse.status}`)
+        }
+
+        const answerText = await liveResponse.text()
+        if (answerText && !answerText.includes('Free limit reached')) {
+          streamTextToMessage(answerText, botMessageId)
+          return
+        }
+        throw new Error('Limit reached or empty response')
+      } catch (liveAiErr) {
+        console.error('All live AI providers failed:', liveAiErr)
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === botMessageId
+              ? {
+                  ...msg,
+                  content:
+                    "I am currently unable to reach the AI service. Please check your internet connection or configure an OpenRouter API key using the key icon above.",
+                }
+              : msg
+          )
+        )
+        setIsStreaming(false)
+      }
     }
   }
 
@@ -600,11 +314,11 @@ export default function BluChat() {
               <h2 className="text-sm md:text-base font-bold text-white flex items-center gap-2">
                 Blu AI Academic Tutor
                 <span className="hidden sm:inline-block text-[11px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                  Capacity: 4,000 Tokens
+                  AI Tutor Live
                 </span>
               </h2>
               <span className="text-[11px] text-slate-400 block font-sans">
-                SVIT CSE Cyber Security • SR25 Cohort
+                Universal Academic & Technical Assistant
               </span>
             </div>
           </div>
@@ -649,16 +363,14 @@ export default function BluChat() {
                 Welcome to Blu, your Academic Wingman! 🎓
               </h3>
               <p className="text-xs md:text-sm text-slate-400 leading-relaxed">
-                Expanded 4,000-token capacity with guaranteed full completion. Ask me about{' '}
-                <span className="text-blue-400 font-semibold">Karuna Mam's Software Engineering</span>,
-                Cryptography algorithms, Forensics labs, or exam preparation!
+                Ask me anything across computer science, engineering, mathematics, coding, or any academic topic.
               </p>
             </div>
 
             {/* Suggested Chips Grid */}
             <div className="pt-4 text-left space-y-2.5">
               <span className="text-[11px] font-mono text-slate-400 font-semibold uppercase tracking-wider block px-1">
-                Suggested Academic Topics
+                Suggested Topics to Ask
               </span>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                 {suggestedPrompts.map((prompt, idx) => (
@@ -668,7 +380,7 @@ export default function BluChat() {
                     className="text-left p-3.5 rounded-2xl bg-[#12192B]/80 hover:bg-[#1A233A] border border-[#1E293B] hover:border-blue-500/50 text-xs md:text-sm text-slate-200 transition-all shadow-md group"
                   >
                     <span className="text-blue-400 font-mono text-xs block mb-1">
-                      0{idx + 1}. Topic Guide
+                      0{idx + 1}. Concept
                     </span>
                     <span className="group-hover:text-blue-300 transition-colors">
                       {prompt}
@@ -706,7 +418,7 @@ export default function BluChat() {
                         <CleanAiMessage content={msg.content} />
                         <div className="mt-3 pt-2.5 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-slate-400">
                           <span className="flex items-center gap-1 text-slate-500">
-                            <Zap className="w-3 h-3 text-cyan-400" /> Complete Response
+                            <Zap className="w-3 h-3 text-cyan-400" /> Complete Answer
                           </span>
                           <button
                             onClick={() => handleCopy(msg.id, msg.content)}
@@ -757,7 +469,7 @@ export default function BluChat() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask Blu anything (e.g. SE design patterns, RSA cipher, buffer overflow)..."
+              placeholder="Ask Blu anything (e.g. algorithms, physics, history, mathematics, code)..."
               disabled={isStreaming}
               className="flex-1 h-12 md:h-14 bg-[#12192B] border border-[#1E293B] rounded-2xl px-5 text-xs md:text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
             />
@@ -796,7 +508,7 @@ export default function BluChat() {
               </button>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Blu comes with an integrated Academic Tutor Engine. If you have your personal OpenRouter API key, you can paste it below to route directly to live models.
+              Blu connects to live AI models. If you have an OpenRouter API key, you can save it below.
             </p>
             <input
               type="password"
