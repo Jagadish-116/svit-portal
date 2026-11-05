@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A" />
+      <stop offset="100%" stop-color="#1E293B" />
+    </linearGradient>
+    <linearGradient id="bluGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#06B6D4" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="16" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  
+  <!-- App Background -->
+  <rect width="512" height="512" rx="128" fill="url(#bgGrad)" />
+  <rect width="504" height="504" x="4" y="4" rx="124" fill="none" stroke="#2D3748" stroke-width="8" />
+
+  <!-- Outer Ring Shield -->
+  <circle cx="256" cy="256" r="180" fill="none" stroke="#3B82F6" stroke-width="6" opacity="0.4" stroke-dasharray="16 8" />
+
+  <!-- Blu Mascot Central Orb -->
+  <circle cx="256" cy="240" r="110" fill="url(#bluGrad)" filter="url(#glow)" />
+
+  <!-- Friendly Eyes -->
+  <ellipse cx="220" cy="225" rx="14" ry="20" fill="#FFFFFF" />
+  <circle cx="224" cy="223" r="8" fill="#0F172A" />
+  <circle cx="226" cy="219" r="3" fill="#FFFFFF" />
+
+  <ellipse cx="292" cy="225" rx="14" ry="20" fill="#FFFFFF" />
+  <circle cx="296" cy="223" r="8" fill="#0F172A" />
+  <circle cx="298" cy="219" r="3" fill="#FFFFFF" />
+
+  <!-- Cheerful Smile -->
+  <path d="M 230 265 Q 256 295 282 265" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" />
+
+  <!-- Cute Rosy Cheeks -->
+  <ellipse cx="195" cy="255" rx="10" ry="6" fill="#F43F5E" opacity="0.6" />
+  <ellipse cx="317" cy="255" rx="10" ry="6" fill="#F43F5E" opacity="0.6" />
+
+  <!-- Graduation / Cyber Security Cap Accent -->
+  <polygon points="256,110 320,135 256,160 192,135" fill="#38BDF8" opacity="0.9" />
+  <polygon points="256,145 300,162 256,180 212,162" fill="#0284C7" />
+
+  <!-- Academic Badge Text -->
+  <text x="256" y="420" font-family="system-ui, -apple-system, sans-serif" font-size="34" font-weight="800" fill="#F1F5F9" text-anchor="middle" letter-spacing="4">
+    SVIT PORTAL
+  </text>
+  <text x="256" y="455" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="600" fill="#94A3B8" text-anchor="middle" letter-spacing="2">
+    CSE • CYBER SECURITY
+  </text>
+</svg>
+

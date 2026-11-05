@@ -1,0 +1,174 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 224 71% 4%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 189 94% 43%;
+    --accent-foreground: 210 40% 98%;
+    --border: 217 33% 17%;
+    --radius: 1rem;
+  }
+
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+
+  html {
+    font-size: 14px;
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  /* Custom subtle scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1E293B;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #334155;
+  }
+}
+
+@layer components {
+  /* Modern Glassmorphic Card */
+  .svit-card {
+    @apply bg-navy-card/90 backdrop-blur-md rounded-2xl border border-slate-medium p-4 md:p-6 shadow-xl transition-all duration-200 hover:border-slate-muted;
+  }
+
+  /* Admin Accent Card */
+  .admin-card {
+    @apply svit-card border-l-4 border-l-amber-warning;
+  }
+
+  /* Glowing Interactive Borders */
+  .glow-hover:hover {
+    box-shadow: 0 0 25px -5px rgba(59, 130, 246, 0.25);
+    border-color: rgba(59, 130, 246, 0.5);
+  }
+
+  /* Status Chips */
+  .chip-present {
+    @apply bg-emerald-present/15 text-emerald-present border border-emerald-present/30 text-xs px-2.5 py-1 rounded-full font-semibold;
+  }
+  .chip-absent {
+    @apply bg-rose-danger/15 text-rose-danger border border-rose-danger/30 text-xs px-2.5 py-1 rounded-full font-semibold;
+  }
+  .chip-pending {
+    @apply bg-amber-warning/15 text-amber-warning border border-amber-warning/30 text-xs px-2.5 py-1 rounded-full font-semibold;
+  }
+  .chip-urgent {
+    @apply bg-rose-danger text-white text-xs px-2.5 py-1 rounded-full font-bold shadow-md shadow-rose-500/20;
+  }
+  .chip-normal {
+    @apply bg-slate-medium text-text-secondary text-xs px-2.5 py-1 rounded-full font-medium;
+  }
+
+  /* Blu FAB Pulsing effect */
+  .blu-fab-pulse {
+    position: relative;
+  }
+  .blu-fab-pulse::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 9999px;
+    background: linear-gradient(135deg, #3B82F6, #06B6D4);
+    opacity: 0.6;
+    animation: fabPing 2.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+    z-index: -1;
+  }
+
+  @keyframes fabPing {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    50% { transform: scale(1.2); opacity: 0; }
+    100% { transform: scale(0.95); opacity: 0; }
+  }
+}
+
+/* =========================================================================
+   RESPONSIVE DESKTOP & MOBILE MEDIA QUERIES
+   ========================================================================= */
+
+/* Mobile viewports (< 768px) */
+@media (max-width: 767px) {
+  .desktop-only {
+    display: none !important;
+  }
+  .mobile-bottom-nav {
+    display: flex !important;
+  }
+}
+
+/* Tablet & Desktop viewports (>= 768px) */
+@media (min-width: 768px) {
+  html {
+    font-size: 15px;
+  }
+
+  .mobile-only {
+    display: none !important;
+  }
+
+  .desktop-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  .desktop-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+/* Large Desktop viewports (>= 1024px) */
+@media (min-width: 1024px) {
+  .desktop-sidebar {
+    width: 260px;
+    display: flex !important;
+  }
+
+  .main-content-desktop {
+    margin-left: 260px;
+    max-width: calc(100vw - 260px);
+  }
+
+  .mobile-bottom-nav {
+    display: none !important;
+  }
+
+  .desktop-container {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
