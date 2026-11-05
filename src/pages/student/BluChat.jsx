@@ -101,7 +101,7 @@ export default function BluChat() {
             'qwen/qwen-2.5-coder-32b-instruct:free',
             'openrouter/free'
           ],
-          max_tokens: 9000,
+          max_tokens: 8192,
           temperature: 0.6,
           stream: true,
           messages: [
