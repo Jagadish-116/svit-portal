@@ -87,13 +87,18 @@ export default function BluChat() {
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
           'Content-Type': 'application/json',
           'HTTP-Referer': window.location.origin,
           'X-Title': 'SVIT Portal - Blu Academic Tutor',
         },
         body: JSON.stringify({
-          model: 'meta-llama/llama-3.3-70b-instruct:free',
+          // openrouter/free automatically selects an active free model
+          model: 'openrouter/free',
+          models: [
+            'openrouter/free',
+            'meta-llama/llama-3.3-70b-instruct:free'
+          ],
           max_tokens: 800,
           temperature: 0.7,
           stream: true,
@@ -104,57 +109,67 @@ export default function BluChat() {
               content: m.content,
             })),
           ],
-          stream: true,
-          temperature: 0.7,
         }),
-      })
+      });
 
       if (!response.ok) {
-        throw new Error(`OpenRouter returned status ${response.status}`)
+        const errorData = await response.json().catch(() => ({}));
+        const errorMsg = errorData?.error?.message || `OpenRouter returned status ${response.status}`;
+        throw new Error(errorMsg);
       }
 
-      const reader = response.body.getReader()
-      const decoder = new TextDecoder('utf-8')
-      let accumulated = ''
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let accumulated = '';
+      let buffer = '';
 
       while (true) {
-        const { value, done } = await reader.read()
-        if (done) break
+        const { value, done } = await reader.read();
+        if (done) break;
 
-        const chunk = decoder.decode(value, { stream: true })
-        const lines = chunk.split('\n')
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        
+        // Keep the last partial line in the buffer
+        buffer = lines.pop() || '';
 
         for (const line of lines) {
-          const trimmed = line.trim()
-          if (!trimmed || trimmed === 'data: [DONE]') continue
+          const trimmed = line.trim();
+          if (!trimmed || trimmed === 'data: [DONE]') continue;
+
           if (trimmed.startsWith('data: ')) {
             try {
-              const parsed = JSON.parse(trimmed.slice(6))
-              const delta = parsed.choices?.[0]?.delta?.content || ''
-              accumulated += delta
-              setMessages((prev) =>
-                prev.map((msg) =>
-                  msg.id === botMessageId ? { ...msg, content: accumulated } : msg
-                )
-              )
+              const jsonStr = trimmed.replace(/^data:\s*/, '');
+              const parsed = JSON.parse(jsonStr);
+              const delta = parsed.choices?.[0]?.delta?.content || '';
+              
+              if (delta) {
+                accumulated += delta;
+                setMessages((prev) =>
+                  prev.map((msg) =>
+                    msg.id === botMessageId ? { ...msg, content: accumulated } : msg
+                  )
+                );
+              }
             } catch (err) {
-              // skip parse error
+              // Ignore partial chunk decode glitches
             }
           }
         }
       }
     } catch (err) {
-      console.warn('OpenRouter fetch failed, using fallback tutor response:', err)
-      let fallbackText = `Hello ${profile?.full_name || 'student'}! 🎓\n\nI am currently operating in resilient offline mode.\n\nRegarding **"${queryText}"**:\n\n- In **Software Engineering (SE - Karuna Mam)** and **Cyber Security**, always ensure requirements traceability and defense-in-depth.\n- Check the **Study Resources** tab for the latest lecture notes.\n\nFeel free to ask another query or check back when online!`
+      console.warn('OpenRouter fetch failed, using fallback tutor response:', err);
+      
+      const fallbackText = `Hello ${profile?.full_name || 'student'}! 🎓\n\nI am currently operating in resilient offline mode.\n\nRegarding **"${queryText}"**:\n\nIn **Software Engineering (SE - Karuna Mam)** and **Cyber Security**, always ensure requirements traceability and defense-in-depth.\n\nCheck the **Study Resources** tab for the latest lecture notes.\n\nFeel free to ask another query or check back when online!`;
+      
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === botMessageId ? { ...msg, content: fallbackText } : msg
         )
-      )
+      );
     } finally {
-      setIsStreaming(false)
+      setIsStreaming(false);
     }
-  }
 
   const clearChat = () => {
     if (window.confirm('Clear all conversation history with Blu?')) {
