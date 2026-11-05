@@ -94,7 +94,12 @@ export default function BluChat() {
           'X-Title': 'SVIT Portal - Blu Academic Tutor',
         },
         body: JSON.stringify({
-          model: 'meta-llama/llama-3.3-70b-instruct:free',
+          model: 'openrouter/free',
+          models: [
+            'openrouter/free',
+            'google/gemma-4-31b-it:free',
+            'google/gemma-4-26b-a4b-it:free'
+          ],
           max_tokens: 800,
           temperature: 0.7,
           stream: true,
@@ -197,7 +202,7 @@ export default function BluChat() {
               <h2 className="text-sm md:text-base font-bold text-white flex items-center gap-2">
                 Blu AI Academic Tutor
                 <span className="hidden sm:inline-block text-[11px] font-mono px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                  GPT-4o Live
+                  OpenRouter Free Live
                 </span>
               </h2>
               <span className="text-[11px] text-slate-400 block font-sans">
@@ -236,7 +241,7 @@ export default function BluChat() {
                 Welcome to Blu, your Academic Wingman! 🎓
               </h3>
               <p className="text-xs md:text-sm text-slate-400 leading-relaxed">
-                Powered by live GPT-4o for SVIT Cyber Security. Ask me about <span className="text-blue-400 font-semibold">Karuna Mam's Software Engineering</span>, Cryptography algorithms, Forensics labs, or exam preparation!
+                Powered by OpenRouter Free AI for SVIT Cyber Security. Ask me about <span className="text-blue-400 font-semibold">Karuna Mam's Software Engineering</span>, Cryptography algorithms, Forensics labs, or exam preparation!
               </p>
             </div>
 
