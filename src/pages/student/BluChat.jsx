@@ -344,4 +344,6 @@ export default function BluChat() {
       </div>
     </div>
   )
+  }
 }
+
