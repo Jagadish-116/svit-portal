@@ -94,7 +94,7 @@ export default function BluChat() {
           'X-Title': 'SVIT Portal - Blu Academic Tutor',
         },
         body: JSON.stringify({
-          model: 'openai/gpt-4o-mini',
+          model: 'meta-llama/llama-3.3-70b-instruct:free',
           max_tokens: 800,
           temperature: 0.7,
           stream: true,
