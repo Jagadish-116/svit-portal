@@ -17,12 +17,12 @@ Key Faculty & Curriculum Context:
 - Database Management Systems (DBMS): Mrs. Anitha Reddy (SQL, ACID, Normalization, Query Optimization).
 - Computer Networks (CN): Mr. Suresh Babu (TCP/IP, OSI layers, routing, Wireshark packet analysis).
 
-Persona & Instruction Style:
-1. Tone: Friendly, knowledgeable, sharp, cyber-focused, encouraging.
-2. Structure: Break down complex engineering concepts with real-world analogies (e.g. comparing network packets to physical mail sorting or encryption to secure vaults).
-3. Code Formatting: Provide well-commented code snippets in Python, C++, Java, or SQL.
-4. Exam Guidance: Offer concise tips for Mid-Term and Final exams when asked.
-5. Formatting: Never output raw # or unnecessary asterisks (*). Use clean clean section titles and simple bullet points so the text is smooth and easy to read.`
+CRITICAL LENGTH & COMPLETENESS CONDITIONS (STRICT COMPLIANCE REQUIRED):
+1. Expansive 8,192 Token Capacity: You have a massive output allowance. Under NO circumstances should you give half-responses, brief placeholders, or leave answers unfinished.
+2. Full End-to-End Explanations: Provide comprehensive, detailed, step-by-step academic explanations from introduction to conclusion.
+3. Complete Code & Examples: Write complete, functional code examples with thorough comments — never leave "TODO", "code goes here", or incomplete snippets.
+4. Guaranteed Completion: Every section started must be fully explored. Always conclude with a dedicated "Key Takeaways / Exam Tips" section and a final complete sentence. Never stop abruptly.
+5. Clean Presentation: Do not output raw # symbols or decorative asterisks (*). Use clean section titles and bullet points (•) for exceptional readability.`
 
 export default function BluChat() {
   const navigate = useNavigate()
@@ -94,18 +94,19 @@ export default function BluChat() {
           'X-Title': 'SVIT Portal - Blu Academic Tutor',
         },
         body: JSON.stringify({
-          model: 'openrouter/free',
+          model: 'meta-llama/llama-3.3-70b-instruct:free',
           models: [
-            'openrouter/free',
+            'meta-llama/llama-3.3-70b-instruct:free',
             'google/gemma-4-31b-it:free',
-            'google/gemma-4-26b-a4b-it:free'
+            'qwen/qwen-2.5-coder-32b-instruct:free',
+            'openrouter/free'
           ],
-          max_tokens: 800,
-          temperature: 0.7,
+          max_tokens: 10000,
+          temperature: 0.6,
           stream: true,
           messages: [
             { role: 'system', content: BLU_SYSTEM_PROMPT },
-            ...newMessages.slice(-12).map((m) => ({
+            ...newMessages.slice(-6).map((m) => ({
               role: m.role,
               content: m.content,
             })),
@@ -123,6 +124,7 @@ export default function BluChat() {
       const decoder = new TextDecoder('utf-8');
       let accumulated = '';
       let buffer = '';
+      let hitLengthLimit = false;
 
       while (true) {
         const { value, done } = await reader.read();
@@ -143,6 +145,9 @@ export default function BluChat() {
               const jsonStr = trimmed.replace(/^data:\s*/, '');
               const parsed = JSON.parse(jsonStr);
               const delta = parsed.choices?.[0]?.delta?.content || '';
+              if (parsed.choices?.[0]?.finish_reason === 'length') {
+                hitLengthLimit = true;
+              }
               
               if (delta) {
                 accumulated += delta;
@@ -157,6 +162,48 @@ export default function BluChat() {
             }
           }
         }
+      }
+
+      // Flush and process any tail data remaining in the stream buffer
+      buffer += decoder.decode();
+      if (buffer.trim()) {
+        const remainingLines = buffer.split('\n');
+        for (const line of remainingLines) {
+          const trimmed = line.trim();
+          if (!trimmed || trimmed === 'data: [DONE]') continue;
+          if (trimmed.startsWith('data: ')) {
+            try {
+              const jsonStr = trimmed.replace(/^data:\s*/, '');
+              const parsed = JSON.parse(jsonStr);
+              const delta = parsed.choices?.[0]?.delta?.content || '';
+              if (parsed.choices?.[0]?.finish_reason === 'length') {
+                hitLengthLimit = true;
+              }
+              if (delta) {
+                accumulated += delta;
+                setMessages((prev) =>
+                  prev.map((msg) =>
+                    msg.id === botMessageId ? { ...msg, content: accumulated } : msg
+                  )
+                );
+              }
+            } catch (err) {}
+          }
+        }
+      }
+
+      // If the model reached the hard max token limit, add a friendly graceful continuation prompt
+      if (hitLengthLimit && accumulated.trim()) {
+        accumulated += '\n\n*(Note: Maximum response window reached. Type "continue" or ask a follow-up to expand further!)*';
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === botMessageId ? { ...msg, content: accumulated } : msg
+          )
+        );
+      }
+
+      if (!accumulated.trim()) {
+        throw new Error('Received empty response from tutor stream');
       }
     } catch (err) {
       console.warn('OpenRouter fetch failed, using fallback tutor response:', err);
@@ -202,7 +249,7 @@ export default function BluChat() {
               <h2 className="text-sm md:text-base font-bold text-white flex items-center gap-2">
                 Blu AI Academic Tutor
                 <span className="hidden sm:inline-block text-[11px] font-mono px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                  OpenRouter Free Live
+                  Llama 3.3 70B • 8k Capacity
                 </span>
               </h2>
               <span className="text-[11px] text-slate-400 block font-sans">
@@ -305,6 +352,24 @@ export default function BluChat() {
               </div>
             )
           })
+        )}
+        {messages.length > 0 && !isStreaming && (
+          <div className="flex items-center gap-2 pt-2 justify-start pl-11">
+            <button
+              onClick={() => handleSend('Please continue and expand further in detail.')}
+              className="text-xs px-3.5 py-1.5 rounded-full bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 border border-blue-500/30 transition-all flex items-center gap-1.5 shadow-sm"
+            >
+              <span>Continue & Expand in Detail</span>
+              <span>➔</span>
+            </button>
+            <button
+              onClick={() => handleSend('Provide detailed code examples and exam key points for this.')}
+              className="hidden sm:flex text-xs px-3.5 py-1.5 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all items-center gap-1.5 shadow-sm"
+            >
+              <span>Add Code & Exam Tips</span>
+              <span>+</span>
+            </button>
+          </div>
         )}
         <div ref={messagesEndRef} />
       </div>
