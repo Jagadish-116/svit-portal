@@ -5,7 +5,8 @@ import { useAuth } from '@/contexts/AuthContext'
 import CleanAiMessage from '@/components/chat/CleanAiMessage'
 
 const OPENROUTER_API_KEY =
-  import.meta.env.VITE_OPENROUTER_API_KEY 
+  import.meta.env.VITE_OPENROUTER_API_KEY ||
+  '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'
 
 const BLU_SYSTEM_PROMPT = `You are Blu, the elite AI Academic Tutor designed for Swamy Vivekananda Institute of Technology (SVIT) specifically for the CSE – Cyber Security cohort (SR25 Regulation).
 
@@ -93,12 +94,7 @@ export default function BluChat() {
           'X-Title': 'SVIT Portal - Blu Academic Tutor',
         },
         body: JSON.stringify({
-          // openrouter/free automatically selects an active free model
-          model: 'openrouter/free',
-          models: [
-            'openrouter/free',
-            'meta-llama/llama-3.3-70b-instruct:free'
-          ],
+          model: 'openai/gpt-4o-mini',
           max_tokens: 800,
           temperature: 0.7,
           stream: true,
@@ -168,8 +164,9 @@ export default function BluChat() {
         )
       );
     } finally {
-      setIsStreaming(false);
+      setIsStreaming(false)
     }
+  }
 
   const clearChat = () => {
     if (window.confirm('Clear all conversation history with Blu?')) {
@@ -344,6 +341,5 @@ export default function BluChat() {
       </div>
     </div>
   )
-  }
 }
 
