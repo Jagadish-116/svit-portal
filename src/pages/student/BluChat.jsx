@@ -95,6 +95,8 @@ export default function BluChat() {
         body: JSON.stringify({
           model: 'meta-llama/llama-3.3-70b-instruct:free',
           max_tokens: 800,
+          temperature: 0.7,
+          stream: true,
           messages: [
             { role: 'system', content: BLU_SYSTEM_PROMPT },
             ...newMessages.slice(-12).map((m) => ({
